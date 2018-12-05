@@ -20,7 +20,8 @@ websocket_init(_Type, Req, _Opts) ->
   % Create the handler from our custom callback
   Handler = ebus_proc:spawn_handler(fun chat_erlbus_handler:handle_msg/2, [self()]),
   ebus:sub(Handler, ?CHATROOM_NAME),
-  {ok, Req, #state{name = get_name(Req), handler = Handler}, ?TIMEOUT}.
+  {QsVal, _} = cowboy_req:qs_val(<<"user">>, Req),
+  {ok, Req, #state{name = QsVal, handler = Handler}, ?TIMEOUT}.
 
 websocket_handle({text, Msg}, Req, State) ->
   ebus:pub(?CHATROOM_NAME, {State#state.name, Msg}),
@@ -34,6 +35,7 @@ websocket_info({message_published, {Sender, Msg}}, Req, State) ->
   Time = maps:get(<<"time">>, Message),
   Reply = #{txt => Text, time => Time},
   {reply, {text, jiffy:encode({[{sender, Sender}, {msg, jiffy:encode(Reply)}]})}, Req, State};
+
 websocket_info(_Info, Req, State) ->
   {ok, Req, State}.
 

@@ -19,12 +19,15 @@
         };
 
         function connect() {
-        wsHost = "ws://" + window.location.host + "/websocket";
-        websocket = new WebSocket(wsHost);
-        websocket.onopen = function(evt) { onOpen(evt) }; 
-        websocket.onclose = function(evt) { onClose(evt) }; 
-        websocket.onmessage = function(evt) { onMessage(evt) }; 
-        websocket.onerror = function(evt) { onError(evt) }; 
+          var username = jQuery("#username").val();
+          console.log(username);
+          wsHost = "ws://" + window.location.host + "/websocket?user=" + username;
+          jQuery("#start").hide();
+          websocket = new WebSocket(wsHost);
+          websocket.onopen = function(evt) { onOpen(evt) };
+          websocket.onclose = function(evt) { onClose(evt) };
+          websocket.onmessage = function(evt) { onMessage(evt) };
+          websocket.onerror = function(evt) { onError(evt) };
       }; 
 
       function onOpen(evt) { 
@@ -77,8 +80,14 @@
   </head>
   <body>
     <div id="alertContainer"></div>
-    <input id="connectButton" type="button" value="Join the Chat Room!" onclick="connect();"/>
-
+    <form id="start" onsubmit="connect(); return false;">
+      <span>
+        <input id="username" type="text"/>
+      </span>
+      <span>
+        <input id="connectButton" type="submit" value="Join the Chat Room!"/>
+      </span>
+    </form>
     <div id="roomContainer">
       <div id="chatContainer"></div>
       <form onsubmit="sendMessage(); return false;">
