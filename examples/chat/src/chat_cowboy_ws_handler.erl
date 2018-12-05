@@ -29,7 +29,11 @@ websocket_handle(_Data, Req, State) ->
   {ok, Req, State}.
 
 websocket_info({message_published, {Sender, Msg}}, Req, State) ->
-  {reply, {text, jiffy:encode({[{sender, Sender}, {msg, Msg}]})}, Req, State};
+  Message = jiffy:decode(Msg, [return_maps]),
+  Text = maps:get(<<"txt">>, Message),
+  Time = maps:get(<<"time">>, Message),
+  Reply = #{txt => Text, time => Time},
+  {reply, {text, jiffy:encode({[{sender, Sender}, {msg, jiffy:encode(Reply)}]})}, Req, State};
 websocket_info(_Info, Req, State) ->
   {ok, Req, State}.
 
