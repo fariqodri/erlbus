@@ -22,7 +22,7 @@
           var username = jQuery("#username").val();
           console.log(username);
           wsHost = "ws://" + window.location.host + "/websocket?user=" + username;
-          jQuery("#start").hide();
+          jQuery("#start").fadeOut("fast");
           websocket = new WebSocket(wsHost);
           websocket.onopen = function(evt) { onOpen(evt) };
           websocket.onclose = function(evt) { onClose(evt) };
@@ -36,6 +36,7 @@
 
       function onClose(evt) { 
         jQuery('#roomContainer').fadeOut('slow');
+        jQuery("#start").fadeIn("fast");
         showAlert('<span style="color: red;">Websocket connection has been closed!</span>');
       };  
 
